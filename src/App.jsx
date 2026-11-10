@@ -11,6 +11,7 @@ import {
 import "./App.css";
 
 const WORKER_URL = "https://code-receiver.mikaelmika263.workers.dev";
+const CODE_LENGTH = 20;
 
 function App() {
   const [code, setCode] = useState("");
@@ -24,7 +25,7 @@ function App() {
   const handlePaste = async () => {
     try {
       const copied = await navigator.clipboard.readText();
-      setCode(copied.replace(/[^a-zA-Z0-9]/g, "").slice(0, 16));
+      setCode(copied.replace(/[^a-zA-Z0-9]/g, "").slice(0, CODE_LENGTH));
       setMessage("");
     } catch {
       setMessage("Clipboard unavailable. Please paste manually.");
@@ -35,8 +36,8 @@ function App() {
     e.preventDefault();
     setMessage("");
 
-    if (code.length !== 16) {
-      setMessage("Enter exactly 16 characters.");
+    if (code.length !== CODE_LENGTH) {
+      setMessage(`Enter exactly ${CODE_LENGTH} characters.`);
       return;
     }
 
@@ -140,22 +141,22 @@ function App() {
                       setCode(
                         e.target.value
                           .replace(/[^a-zA-Z0-9]/g, "")
-                          .slice(0, 16)
+                          .slice(0, CODE_LENGTH)
                       );
                       setMessage("");
                     }}
                     placeholder="Enter generated password here"
-                    maxLength={16}
+                    maxLength={CODE_LENGTH}
                     autoComplete="off"
                     spellCheck={false}
                   />
-                  <span>{code.length}/16</span>
+                  <span>{code.length}/{CODE_LENGTH}</span>
                 </div>
 
                 <button
                   type="submit"
                   className="submit-button"
-                  disabled={loading || code.length !== 16}
+                  disabled={loading || code.length !== CODE_LENGTH}
                 >
                   {loading ? "Submitting..." : "Submit"} <Send size={15} />
                 </button>
@@ -174,4 +175,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;s
