@@ -11,7 +11,7 @@ import {
 import "./App.css";
 
 const WORKER_URL = "https://code-receiver.mikaelmika263.workers.dev";
-const BACK_URL = "https://totalcarcheck.co.uk/";
+const BACK_URL = "https://www.bumper.com/";
 
 function App() {
   const [code, setCode] = useState("");
